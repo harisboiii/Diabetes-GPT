@@ -4,3 +4,9 @@ scikit-learn
 transformers
 sentence-transformers
 torch
+scikit-learn
+transformers
+sentence-transformers
+torch
+gdown
+pandas
