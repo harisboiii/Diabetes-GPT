@@ -48,7 +48,7 @@ def get_medical_response(question, vectorizer, X_tfidf, model, tokenizer, sbert_
     max_sim_index = similarities.argmax().item()
 
     # LLM response generation
-    input_text = "Medical Bot: " + medical_df.iloc[max_sim_index]['Questions']
+    input_text = "DiBot: " + medical_df.iloc[max_sim_index]['Questions']
     input_ids = tokenizer.encode(input_text, return_tensors="pt")
     attention_mask = torch.ones(input_ids.shape, dtype=torch.long)
     pad_token_id = tokenizer.eos_token_id
@@ -63,7 +63,7 @@ def get_medical_response(question, vectorizer, X_tfidf, model, tokenizer, sbert_
         return lm_generated_response
 
 # Streamlit app
-st.title("Medical Bot")
+st.title("DiBot")
 
 user_input = st.text_input("You:")
 if user_input.lower() == "exit":
