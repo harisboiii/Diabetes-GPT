@@ -45,12 +45,11 @@ def get_medical_response(question, vectorizer, X_tfidf, model, tokenizer, sbert_
     lm_output = model.generate(input_ids, max_length=150, num_return_sequences=1, no_repeat_ngram_size=2, attention_mask=attention_mask, pad_token_id=pad_token_id)
     lm_generated_response = tokenizer.decode(lm_output[0], skip_special_tokens=True)
 
-    # Compare similarities and choose the best response
     if tfidf_similarities.max() > 0.5:
         tfidf_index = tfidf_similarities.argmax()
         return medical_df.iloc[tfidf_index]['Answers']
     else:
-        return lm_generated_response
+        return medical_df.iloc[max_sim_index]['Answers']
 
 # Streamlit app
 st.title("Medical Bot")
