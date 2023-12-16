@@ -6,8 +6,18 @@ from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from sentence_transformers import SentenceTransformer, util
 import torch
 
-# Load medical data
-excel_file_path = r"C:\Users\HEHEBOI\Desktop\GPT2Final\medical_data.csv"
+import gdown
+import os
+import pandas as pd
+
+# Download the file
+file_id = '1P3Nz6f3KG0m0kO_2pEfnVIhgP8Bvkl4v'
+url = f'https://drive.google.com/uc?id={file_id}'
+excel_file_path = os.path.join(os.path.expanduser("~"), 'medical_data.csv')
+
+gdown.download(url, excel_file_path, quiet=False)
+
+# Read the CSV file into a DataFrame using 'latin1' encoding
 try:
     medical_df = pd.read_csv(excel_file_path, encoding='utf-8')
 except UnicodeDecodeError:
@@ -45,11 +55,12 @@ def get_medical_response(question, vectorizer, X_tfidf, model, tokenizer, sbert_
     lm_output = model.generate(input_ids, max_length=150, num_return_sequences=1, no_repeat_ngram_size=2, attention_mask=attention_mask, pad_token_id=pad_token_id)
     lm_generated_response = tokenizer.decode(lm_output[0], skip_special_tokens=True)
 
+    # Compare similarities and choose the best response
     if tfidf_similarities.max() > 0.5:
         tfidf_index = tfidf_similarities.argmax()
         return medical_df.iloc[tfidf_index]['Answers']
     else:
-        return medical_df.iloc[max_sim_index]['Answers']
+        return lm_generated_response
 
 # Streamlit app
 st.title("Medical Bot")
