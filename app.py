@@ -5,19 +5,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from sentence_transformers import SentenceTransformer, util
 import torch
-
 import gdown
 import os
-import pandas as pd
 
-# Download the file
+
 file_id = '1P3Nz6f3KG0m0kO_2pEfnVIhgP8Bvkl4v'
 url = f'https://drive.google.com/uc?id={file_id}'
 excel_file_path = os.path.join(os.path.expanduser("~"), 'medical_data.csv')
 
-gdown.download(url, excel_file_path, quiet=False)
-
-# Read the CSV file into a DataFrame using 'latin1' encoding
+# Read the CSV file
 try:
     medical_df = pd.read_csv(excel_file_path, encoding='utf-8')
 except UnicodeDecodeError:
@@ -35,6 +31,7 @@ model = GPT2LMHeadModel.from_pretrained(model_name)
 # Load pre-trained Sentence Transformer model
 sbert_model_name = "paraphrase-MiniLM-L6-v2"
 sbert_model = SentenceTransformer(sbert_model_name)
+
 
 # Function to answer medical questions using a combination of TF-IDF, LLM, and semantic similarity
 def get_medical_response(question, vectorizer, X_tfidf, model, tokenizer, sbert_model, medical_df):
@@ -62,11 +59,24 @@ def get_medical_response(question, vectorizer, X_tfidf, model, tokenizer, sbert_
     else:
         return lm_generated_response
 
-# Streamlit app
+# Streamlit UI
 st.title("DiBot")
 
-user_input = st.text_input("You:")
-if user_input.lower() == "exit":
-    st.stop()
-response = get_medical_response(user_input, vectorizer, X_tfidf, model, tokenizer, sbert_model, medical_df)
-st.text_area("Bot's Response:", response)
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+user_input = st.chat_input("You:")
+
+if user_input:
+    response = get_medical_response(user_input, vectorizer, X_tfidf, model, tokenizer, sbert_model, medical_df)
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.messages.append({"role": "assistant", "content": response})
+
+# Display the chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
