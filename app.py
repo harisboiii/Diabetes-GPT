@@ -8,15 +8,14 @@ import torch
 import gdown
 import os
 
-file_id = '1P3Nz6f3KG0m0kO_2pEfnVIhgP8Bvkl4v'
-url = f'https://drive.google.com/uc?id={file_id}'
-excel_file_path = os.path.join(os.path.expanduser("~"), 'medical_data.csv')
+# GitHub raw URL for the medical_data.csv file in the same repository
+github_url = 'https://raw.githubusercontent.com/yourusername/yourrepo/main/data/medical_data.csv'
 
-# Read the CSV file
+# Read the CSV file directly from GitHub
 try:
-    medical_df = pd.read_csv(excel_file_path, encoding='utf-8')
+    medical_df = pd.read_csv(github_url)
 except UnicodeDecodeError:
-    medical_df = pd.read_csv(excel_file_path, encoding='latin1')
+    medical_df = pd.read_csv(github_url, encoding='latin1')
 
 # TF-IDF Vectorization
 vectorizer = TfidfVectorizer(stop_words='english')
