@@ -8,7 +8,6 @@ import torch
 import gdown
 import os
 
-
 file_id = '1P3Nz6f3KG0m0kO_2pEfnVIhgP8Bvkl4v'
 url = f'https://drive.google.com/uc?id={file_id}'
 excel_file_path = os.path.join(os.path.expanduser("~"), 'medical_data.csv')
